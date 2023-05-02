@@ -11,17 +11,17 @@ import freechips.rocketchip.util.HasRocketChipStageUtils
 
 class CoreMemIntf extends Bundle
 
-class CoreNode(implicit p: Parameter) extends SimpleLazyModule {
+class Core(implicit p: Parameters) extends SimpleLazyModule {
  val core_out = BundleBridgeSource(() => DecoupledIO(new CoreMemIntf()))
 }
 
-class MemNode(implicit p: Parameter) extends SimpleLazyModule {
-  val mem_node = BundleBridgeSink[DecoupledIO[CoreMemIntf]]
+class Mem(implicit p: Parameters) extends SimpleLazyModule {
+  val mem_in = BundleBridgeSink[DecoupledIO[CoreMemIntf]]
 }
 
-class Network(implicit p: Parameter) extends SimpleLazyModule {
-  val core_node = LazyModule(new CoreNode())
-  val mem_node = LazyModule(new MemNode())
+class Network(implicit p: Parameters) extends SimpleLazyModule {
+  val core_node = LazyModule(new Core())
+  val mem_node = LazyModule(new Mem())
 
-  mem_node := core_node
+  mem_node.mem_in := core_node.core_out
 }
