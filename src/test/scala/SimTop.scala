@@ -10,7 +10,7 @@ import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
 
 object SimTop extends App with HasRocketChipStageUtils {
   implicit val config = Parameters.empty
-  val network = LazyModule(new Network())
+  val network = LazyModule(new Network(4))
   (new ChiselStage).execute(args, Seq(
     ChiselGeneratorAnnotation(() => network.module)
   ))
