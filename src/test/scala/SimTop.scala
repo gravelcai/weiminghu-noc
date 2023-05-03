@@ -14,4 +14,5 @@ object SimTop extends App with HasRocketChipStageUtils {
   (new ChiselStage).execute(args, Seq(
     ChiselGeneratorAnnotation(() => network.module)
   ))
+  writeOutputFile(".", "Network.graphml", network.graphML)
 }

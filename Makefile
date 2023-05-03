@@ -8,4 +8,4 @@ verilog:
 	sbt "Test / runMain weiminghu.SimTop -td ./build"
 
 clean:
-	rm -rf ./build
+	rm -rf ./build *.graphml
