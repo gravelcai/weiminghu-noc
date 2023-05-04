@@ -48,6 +48,14 @@ lazy val `rocket-chip` = (Project("rocket-chip", file("rocket-chip/src")))
     Compile / resourceDirectory := baseDirectory.value / "main" / "resources"
   )
 
+lazy val constellation = (project in file("constellation"))
+  .settings(commonSettings, chiselSettings)
+  .dependsOn(cde)
+  .dependsOn(hardfloat)
+  .dependsOn(`rocket-macros`)
+  .dependsOn(`rocket-chip`)
+
 lazy val weiminghu = (Project("weiminghu-noc", base = file(".")))
   .settings(commonSettings, chiselSettings)
   .dependsOn(`rocket-chip`)
+  .dependsOn(constellation)
