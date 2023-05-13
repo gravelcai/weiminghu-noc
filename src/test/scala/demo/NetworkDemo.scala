@@ -133,7 +133,7 @@ class Memory () (implicit p: Parameters) extends LazyModule {
 }
 
 // define a top module that instantiates the cores, the memory and the crossbar
-class Network (nCores: Int) (implicit p: Parameters) extends LazyModule {
+class NetworkDemo (nCores: Int) (implicit p: Parameters) extends LazyModule {
   val cores = (0 until nCores) map { i => LazyModule(new Core(i)) }
   val memory = LazyModule(new Memory())
 
