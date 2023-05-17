@@ -1,22 +1,21 @@
-package weiminghu
+package weiminghu.demo
 
 import chisel3._
 import chisel3.stage.{ChiselGeneratorAnnotation, ChiselStage}
-import constellation.channel._
-import constellation.noc._
-import constellation.routing.Mesh2DDimensionOrderedRouting
-import constellation.topology.Mesh2D
+import org.chipsalliance.cde.config.{Parameters, Config}
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.util.HasRocketChipStageUtils
-import org.chipsalliance.cde.config.{Field, Parameters}
+
+import constellation.noc._
+import constellation.topology.Mesh2D
+import constellation.channel._
+import constellation.routing.Mesh2DDimensionOrderedRouting
 
 
-class NoCDemo(implicit val p: Parameters) extends Module {
+object NoCDemoTest extends App with HasRocketChipStageUtils {
   val nocParams = NoCParams(
     topology = Mesh2D(3, 3),
-    channelParamGen = (a, b) => UserChannelParams(Seq.fill(4) {
-      UserVirtualChannelParams(5)
-    }),
+    channelParamGen = (a, b) => UserChannelParams(Seq.fill(4) { UserVirtualChannelParams(5) }),
     ingresses = (0 until 9).map { i => UserIngressParams(i) },
     egresses = (0 until 9).map { i => UserEgressParams(i) },
     flows = Seq.tabulate(9, 9) { (s, d) => FlowParams(s, d, 0) }.flatten,
@@ -25,32 +24,16 @@ class NoCDemo(implicit val p: Parameters) extends Module {
     nocName = "Mesh2DDemo"
   )
 
-  val noc = LazyModule(new NoC(nocParams))
-}
+  val internalNoCParams = InternalNoCParams(nocParams)
 
-case object NoCDemoKey extends Field[NoCParams]
+  implicit val config = new Config((_,_,_) => {
+    case InternalNoCKey => internalNoCParams
+  })
 
+  val noc_demo = LazyModule(new NoCDemo)
 
-object NoCDemo extends App with HasRocketChipStageUtils {
-//  val nocParams = NoCParams(
-//    topology = Mesh2D(3, 3),
-//    channelParamGen = (a, b) => UserChannelParams(Seq.fill(4) { UserVirtualChannelParams(5) }),
-//    ingresses = (0 until 9).map { i => UserIngressParams(i) },
-//    egresses = (0 until 9).map { i => UserEgressParams(i) },
-//    flows = Seq.tabulate(9, 9) { (s, d) => FlowParams(s, d, 0) }.flatten,
-//    routingRelation = Mesh2DDimensionOrderedRouting(),
-//
-//    nocName = "Mesh2DDemo"
-//  )
-//  val config = new Config((_,_,_) => {
-//    NoCDemoKey => nocParams
-//  })
-
-  implicit val config = Parameters.empty
-
-//  val noc = new NoCDemo
   (new ChiselStage).execute(args, Seq(
-    ChiselGeneratorAnnotation(() => new NoCDemo)
+    ChiselGeneratorAnnotation(() => noc_demo.module)
   ))
 //  writeOutputFile(".", "NoCDemo.graphml", noc.noc.graphML)
 }
