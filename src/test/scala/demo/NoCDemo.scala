@@ -120,19 +120,15 @@ class NoCDemo(implicit p: Parameters) extends LazyModule with HasNoCParams {
   lazy val module = new Impl
 
   class Impl extends LazyModuleImp(this) {
-//    println(s"Constellation: $nocName Starting NoC RTL generation")
-//    val io = IO(new NoCTerminalIO(allIngressParams, allEgressParams) {
-//      val router_clocks = Vec(nNodes, Input(new ClockBundle(ClockBundleParameters())))
-//    })
-    val io = IO(new NoCTerminalIO(allIngressParams, allEgressParams))
+    println(s"Constellation: $nocName Starting NoC RTL generation")
+    val io = IO(new NoCTerminalIO(allIngressParams, allEgressParams) {
+      val router_clocks = Vec(nNodes, Input(new ClockBundle(ClockBundleParameters())))
+    })
 
     (io.ingress zip ingressNodes.map(_.out(0)._1)).foreach { case (l, r) => r <> l }
     (io.egress zip egressNodes.map(_.in(0)._1)).foreach { case (l, r) => l <> r }
-//    (io.router_clocks zip clockSourceNodes.map(_.out(0)._1)).foreach { case (l, r) => l <> r }
-    clockSourceNodes.map(_.out(0)._1).foreach { case n =>
-      n.clock := clock
-      n.reset := reset
-    }
+    (io.router_clocks zip clockSourceNodes.map(_.out(0)._1)).foreach { case (l, r) => l <> r }
+
 
     // TODO: These assume a single clock-domain across the entire noc
     val debug_va_stall_ctr = RegInit(0.U(64.W))
