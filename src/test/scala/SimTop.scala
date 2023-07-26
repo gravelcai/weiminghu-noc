@@ -20,4 +20,6 @@ import constellation.{NoCTest, TLNoCTest, AXI4NoCTest}
 //}
 
 
-class NoCTest_Ring_4 extends NoCTest(Seq(new TestConfig_Ring_4))
+class ConfigRing4_82bits extends NoCTest(Seq(new Ring4_82bits))
+
+class ConfigRing4_20bits extends NoCTest(Seq(new Ring4_20bits))
