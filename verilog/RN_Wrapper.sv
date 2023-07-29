@@ -1,6 +1,7 @@
 module RN_Wrapper(
   input           clk,
   input           rst,
+  //NoC port
   //AW
   input           aw_ready,
   output          aw_valid,
@@ -29,59 +30,59 @@ module RN_Wrapper(
   input           r_head,
   input           r_tail,
   input   [81:0]  r_payload,
-  input   [1:0]   r_srcid
-);
-
+  input   [1:0]   r_srcid,
+//CPU port 
 //AW Channel
-  wire            AWREADY;
-  wire            AWVALID;
-  wire  [10:0]    AWID;
-  wire  [31:0]    AWADDR;
-  wire  [3:0]     AWREGION;
-  wire  [7:0]     AWLEN;
-  wire  [2:0]     AWSIZE;
-  wire  [1:0]     AWBURST;
-  wire            AWLOCK;
-  wire  [3:0]     AWCACHE;
-  wire  [2:0]     AWPROT;
-  wire  [3:0]     AWQOS;
-  wire  [3:0]     AWUSER;
+  output           AWREADY,
+  input            AWVALID,
+  input  [10:0]    AWID,
+  input  [31:0]    AWADDR,
+  input  [3:0]     AWREGION,
+  input  [7:0]     AWLEN,
+  input  [2:0]     AWSIZE,
+  input  [1:0]     AWBURST,
+  input            AWLOCK,
+  input  [3:0]     AWCACHE,
+  input  [2:0]     AWPROT,
+  input  [3:0]     AWQOS,
+  input  [3:0]     AWUSER,
   //W Channel
-  wire            WREADY;
-  wire            WVALID;
-  wire  [10:0]    WID;
-  wire  [63:0]    WDATA;
-  wire  [7:0]     WSTRB;
-  wire            WLAST;
-  wire  [3:0]     WUSER;
+  output           WREADY,
+  input            WVALID,
+  input  [10:0]    WID,
+  input  [63:0]    WDATA,
+  input  [7:0]     WSTRB,
+  input            WLAST,
+  input  [3:0]     WUSER,
   //B Channel
-  wire            BREADY;
-  wire            BVALID;
-  wire  [10:0]    BID;
-  wire  [1:0]     BRESP;
-  wire  [3:0]     BUSER;
+  input            BREADY,
+  output           BVALID,
+  output  [10:0]   BID,
+  output  [1:0]    BRESP,
+  output  [3:0]    BUSER,
   //AR Channel
-  wire            ARREADY;
-  wire            ARVALID;
-  wire  [10:0]    ARID;
-  wire  [31:0]    ARADDR;
-  wire  [3:0]     ARREGION;
-  wire  [7:0]     ARLEN;
-  wire  [2:0]     ARSIZE;
-  wire  [1:0]     ARBURST;
-  wire            ARLOCK;
-  wire  [3:0]     ARCACHE;
-  wire  [2:0]     ARPROT;
-  wire  [3:0]     ARQOS;
-  wire  [3:0]     ARUSER;
+  output           ARREADY,
+  input            ARVALID,
+  input  [10:0]    ARID,
+  input  [31:0]    ARADDR,
+  input  [3:0]     ARREGION,
+  input  [7:0]     ARLEN,
+  input  [2:0]     ARSIZE,
+  input  [1:0]     ARBURST,
+  input            ARLOCK,
+  input  [3:0]     ARCACHE,
+  input  [2:0]     ARPROT,
+  input  [3:0]     ARQOS,
+  input  [3:0]     ARUSER,
   //R Channel
-  wire            RREADY;
-  wire            RVALID;
-  wire  [10:0]    RID;
-  wire  [63:0]    RDATA;
-  wire  [1:0]     RRESP;
-  wire            RLAST;
-  wire  [3:0]     RUSER;
+  input            RREADY,
+  output           RVALID,
+  output  [10:0]   RID,
+  output  [63:0]   RDATA,
+  output  [1:0]    RRESP,
+  output           RLAST,
+  output  [3:0]    RUSER
+);
 
   reg   [7:0]     awlen_q;
   reg             aw_new;
