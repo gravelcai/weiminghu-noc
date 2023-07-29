@@ -1,4 +1,4 @@
-module NoC(
+module NoC_20b(
   input         clock,
   input         reset,
   output        io_ingress_3_flit_ready,
