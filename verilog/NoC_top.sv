@@ -373,7 +373,7 @@ module NoC_top
 
 
     // B
-    NoC_20b u_b_channel (
+    NoC_82b u_b_channel (
         .clock                                  ( clock ),
         .reset                                  ( reset ),
         .io_ingress_3_flit_ready                ( b_ingress_3_flit_ready ),
