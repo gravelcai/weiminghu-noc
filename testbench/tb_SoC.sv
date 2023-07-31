@@ -275,27 +275,6 @@ module tb_SoC;
     wire [1:0]                  dma_axi_rresp;
     wire                        dma_axi_rlast;
 
-    wire                        lmem_axi_arvalid;
-    wire                        lmem_axi_arready;
-
-    wire                        lmem_axi_rvalid;
-    wire [`RV_LSU_BUS_TAG-1:0]  lmem_axi_rid;
-    wire [1:0]                  lmem_axi_rresp;
-    wire [63:0]                 lmem_axi_rdata;
-    wire                        lmem_axi_rlast;
-    wire                        lmem_axi_rready;
-
-    wire                        lmem_axi_awvalid;
-    wire                        lmem_axi_awready;
-
-    wire                        lmem_axi_wvalid;
-    wire                        lmem_axi_wready;
-
-    wire [1:0]                  lmem_axi_bresp;
-    wire                        lmem_axi_bvalid;
-    wire [`RV_LSU_BUS_TAG-1:0]  lmem_axi_bid;
-    wire                        lmem_axi_bready;
-
     // SN0-0 interface
     wire                        sn0_0_axi_awvalid;
     wire                        sn0_0_axi_awready;
@@ -687,7 +666,7 @@ module tb_SoC;
         end
         if(`DEC.dec_nonblock_load_wen) begin
             $fwrite (el, "%10d : %10d%22s=%h ; nbL\n", cycleCnt, 0, abi_reg[`DEC.dec_nonblock_load_waddr], `DEC.lsu_nonblock_load_data);
-            tb_top.gpr[0][`DEC.dec_nonblock_load_waddr] = `DEC.lsu_nonblock_load_data;
+            tb_SoC.gpr[0][`DEC.dec_nonblock_load_waddr] = `DEC.lsu_nonblock_load_data;
         end
     end
 
