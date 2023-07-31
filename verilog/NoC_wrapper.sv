@@ -1624,9 +1624,7 @@ SN_Wrapper u_sn3(
 
 
 // NoC instantiate
-NoC_top #(
-    .param
-) u_noc_top
+NoC_top u_noc_top
 (
     .clock                              ( clock ),
     .reset                              ( reset ),
