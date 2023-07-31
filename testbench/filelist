@@ -1,0 +1,20 @@
++libext+.v+.sv
+
+// tb file
+../testbench/tb_SoC.sv
+
++incdir+../verilog/veer
++incdir+../verilog/veer/include
+
+-y ../verilog
+-y ../verilog/veer
+-y ../verilog/veer/dbg
+-y ../verilog/veer/dec
+-y ../verilog/veer/dmi
+-y ../verilog/veer/exu
+-y ../verilog/veer/ifu
+-y ../verilog/veer/include
+-y ../verilog/veer/lib
+-y ../verilog/veer/lsu
+-y ../verilog/RN
+-y ../verilog/Ring4_82bits
