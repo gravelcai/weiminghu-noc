@@ -6,6 +6,8 @@
 +incdir+../verilog/veer
 +incdir+../verilog/veer/include
 
+../verilog/veer/include/veer_types.sv
+
 -y ../verilog
 -y ../verilog/veer
 -y ../verilog/veer/dbg
