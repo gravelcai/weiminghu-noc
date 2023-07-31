@@ -96,8 +96,8 @@ assign w_head = AWVALID & WVALID ;
 assign w_tail = WLAST ;
 
 //R Channel Head and Tail flit signal
-assign r_head = ARVALID & RVALID ;
-assign r_tail = RLAST ;
+assign RVALID = r_head;
+assign RLAST = r_tail;
 
 //NoC CPU Connecting
 //AW
