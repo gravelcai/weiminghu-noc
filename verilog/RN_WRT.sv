@@ -20,11 +20,12 @@ localparam  LOG2_RN_TRACKER_NUM = $clog2(RN_TRACKER_NUM)    ;
 
 reg     [RN_TRACKER_NUM-1:0][12:0]  tracker_entry           ;
 wire    [12:0]                      tracker_info            ;
+wire    [RN_TRACKER_NUM-1:0]        update_valid_vec        ;
 wire    [RN_TRACKER_NUM-1:0]        tracker_valid           ;
 reg     [RN_TRACKER_NUM-1:0]        tracker_valid_q         ;
 reg     [RN_TRACKER_NUM-1:0]        free_tracker_entries    ;
-wire    [RN_TRACKER_NUM-1:0]        tracker_entry_dec       ;
-wire    [LOG2_RN_TRACKER_NUM-1:0]   tracker_entry_inc       ;
+wire     [RN_TRACKER_NUM-1:0]        tracker_entry_dec       ;
+wire     [LOG2_RN_TRACKER_NUM-1:0]   tracker_entry_enc       ;
 wire                                tracker_entry_found     ;
 wire    [RN_TRACKER_NUM-1:0]        wrenvec                 ;
 wire                                aw_active               ;
@@ -34,8 +35,8 @@ wire                                flag_awfirst            ;
 reg     [1:0]                       W_TgtID_q               ;
 reg     [RN_TRACKER_NUM-1:0][7:0]   counter                 ;
 reg     [RN_TRACKER_NUM-1:0]        tracker_wid_cam_vec_dec ;
-reg     [LOG2_RN_TRACKER_NUM-1:0]   tracker_wid_cam_vec_inc ;
-wire    [RN_TRACKER_NUM-1:0]        tracker_dealloc_vec     ;
+reg     [LOG2_RN_TRACKER_NUM-1:0]   tracker_wid_cam_vec_enc ;
+reg    [RN_TRACKER_NUM-1:0]        tracker_dealloc_vec     ;
 
 assign tracker_info = {AWID,AW_TgtID}; 
 assign aw_active = AWREADY & AWVALID;           //
@@ -51,12 +52,15 @@ begin
 end
 
 
-rr_arbiter u_find_entry #(
-    .DATA_WIDTH(RN_TRACKER_NUM)
-)(
+rr_arbiter #(
+    .DATA_WIDTH(RN_TRACKER_NUM),
+	.LOG2_DATA_WIDTH(LOG2_RN_TRACKER_NUM)
+)
+ u_find_entry
+(
     .data_in(free_tracker_entries[RN_TRACKER_NUM-1:0])     ,
-    .entry_dec(tracker_entry_dec)   ,
-    .entry_inc(tracker_entry_inc)   ,
+    .entry_dec(tracker_entry_dec[RN_TRACKER_NUM-1:0])   ,
+    .entry_enc(tracker_entry_enc[LOG2_RN_TRACKER_NUM-1:0])   ,
     .entry_found(tracker_entry_found)
 );
 
@@ -114,24 +118,6 @@ generate
 endgenerate
 
 //dealloc
-genvar g;
-generate
-    for(g=0;g<RN_TRACKER_NUM;g=g+1)
-    begin:COUNTER
-        always@(posedge clk)
-        begin:u_counter
-            if(rst) begin
-                counter[RN_TRACKER_NUM-1:0][7:0] <= {RN_TRACKER_NUM{8'b0}};
-            end
-            else if((wrenvec[g] == 1'b1) & aw_active) begin
-                counter[g] <= AWLEN + 1;
-            else if(WVALID)
-                counter[tracker_entry_inc] - 1;
-            end
-        end
-    end
-endgenerate
-
 
 genvar p;
 generate 
@@ -141,8 +127,11 @@ generate
         begin:u_cam
         if(tracker_valid_q[p] & (WID[10:0] == tracker_entry[p][12:2])) begin
             tracker_wid_cam_vec_dec[p] = 1'b1;
-            tracker_wid_cam_vec_inc[LOG2_RN_TRACKER_NUM-1:0] = p;
-        end else
+            tracker_wid_cam_vec_enc[LOG2_RN_TRACKER_NUM-1:0] = p;
+        end else begin
+            tracker_wid_cam_vec_dec[p] = tracker_wid_cam_vec_dec[p];
+            tracker_wid_cam_vec_enc[LOG2_RN_TRACKER_NUM-1:0] = tracker_wid_cam_vec_enc[LOG2_RN_TRACKER_NUM-1:0];
+        end
         end
     end
 
@@ -151,13 +140,13 @@ endgenerate
 always@(posedge clk)
 begin:u_counter
     if(rst) begin
-        counter[RN_TRACKER_NUM-1:0][7:0] <= {RN_TRACKER_NUM{8'b0}};
+        counter[RN_TRACKER_NUM-1:0] <= {RN_TRACKER_NUM{8'b0}};
     end
     else if(aw_active) begin
-        counter[tracker_wid_cam_vec_inc] <= AWLEN + 1;
+        counter[tracker_wid_cam_vec_enc] <= AWLEN + 1;
     end
     else if(WVALID) begin
-        counter[tracker_wid_cam_vec_inc] <= counter - 1;
+        counter[tracker_wid_cam_vec_enc] <= counter - 1;
     end
     else begin
         counter <= counter;
