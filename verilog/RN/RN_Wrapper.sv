@@ -88,6 +88,9 @@ module RN_Wrapper(
   wire  [1:0]     NODE_AW;
   wire  [10:0]    WID;
 
+//generate WID for RT combining AW and W,then generate w_tgtid
+assign WID = AWID;
+
 //W Channel Head and Tail flit signal
 assign w_head = AWVALID & WVALID ;
 assign w_tail = WLAST ;
@@ -100,7 +103,16 @@ assign r_tail = RLAST ;
 //AW
 assign AWREADY = aw_ready;
 assign aw_valid = AWVALID;
-assign aw_payload = {6'b0,AWID,AWADDR,AWREGION,AWLEN,AWSIZE,AWBURST,AWLOCK,AWCACHE,AWPROT,AWQOS,AWUSER};
+assign aw_payload[10:0] = AWID;
+assign aw_payload[42:11] = AWADDR;
+assign aw_payload[46:43] = AWREGION;
+assign aw_payload[54:47] = AWLEN;
+assign aw_payload[57:55] = AWSIZE;
+assign aw_payload[59:58] = AWBURST;
+assign aw_payload[60] = AWLOCK;
+assign aw_payload[64:61] = AWCACHE;
+assign aw_payload[67:65] = AWPROT;
+assign aw_payload[71:68] = AWQOS;
 
 assign aw_tgtid = NODE_AW;
 assign AW_TgtID = NODE_AW;
@@ -108,31 +120,40 @@ assign AW_TgtID = NODE_AW;
 //W
 assign WREADY = w_ready;
 assign w_valid = WVALID;
-assign w_payload = {5'b0,WDATA,WSTRB,WLAST,WUSER};
+assign w_payload[81:74] = WSTRB;
+assign w_payload[73:10] = WDATA;
+assign w_payload[9:0] = WID[9:0];
 
 //B
 assign b_ready = BREADY;
 assign BVALID = b_valid;
-assign BID = b_payload[16:6];
-assign BRESP = b_payload[5:4];
-assign BUSER = b_payload[3:0];
+assign BID = b_payload[10:0];
+assign BRESP = b_payload[12:11];
+assign BUSER = b_payload[16:13];
 
 //AR
 assign ARREADY = ar_ready;
 assign ar_valid = ARVALID;
-assign ar_payload = {6'b0,ARID,ARADDR,ARREGION,ARLEN,ARSIZE,ARBURST,ARLOCK,ARCACHE,ARPROT,ARQOS,ARUSER};
+assign ar_payload[10:0] = ARID;
+assign ar_payload[42:11] = ARADDR;
+assign ar_payload[46:43] = ARREGION;
+assign ar_payload[54:47] = ARLEN;
+assign ar_payload[57:55] = ARSIZE;
+assign ar_payload[59:58] = ARBURST;
+assign ar_payload[60] = ARLOCK;
+assign ar_payload[64:61] = ARCACHE;
+assign ar_payload[67:65] = ARPROT;
+assign ar_payload[71:68] = ARQOS;
+
 
 //R
 assign r_ready = RREADY;
 assign RVALID = r_valid;
 assign RLAST = r_tail;
-assign RID = r_payload[80:70];
-assign RDATA = r_payload[69:6];
-assign RRESP = r_payload[5:4];
-assign RUSER = r_payload[3:0];
-
-//generate WID for RT combining AW and W,then generate w_tgtid
-assign WID = AWID;
+assign RID = r_payload[10:0];
+assign RDATA = r_payload[74:11];
+assign RRESP = r_payload[76:75];
+assign RUSER = r_payload[80:77];
 
 //RN_WRT 在AW握手成功后将AWID、AW_TgtID存储，等待之后W握手成功后将AW_TgtID作为w_tgtid发往目标节点
   RN_WRT u_RN_WRT(
