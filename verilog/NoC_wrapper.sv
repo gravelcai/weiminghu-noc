@@ -842,7 +842,6 @@ RN_Wrapper u_rn0
 
     .WVALID         ( rn0_WVALID ),
     .WREADY         ( rn0_WREADY ),
-    .WID            ( rn0_WID ),
     .WDATA          ( rn0_WDATA ),
     .WSTRB          ( rn0_WSTRB ),
     .WLAST          ( rn0_WLAST ),
@@ -927,7 +926,6 @@ RN_Wrapper u_rn1
 
     .WVALID         ( rn1_WVALID ),
     .WREADY         ( rn1_WREADY ),
-    .WID            ( rn1_WID ),
     .WDATA          ( rn1_WDATA ),
     .WSTRB          ( rn1_WSTRB ),
     .WLAST          ( rn1_WLAST ),
@@ -1012,7 +1010,6 @@ RN_Wrapper u_rn2
 
     .WVALID         ( rn2_WVALID ),
     .WREADY         ( rn2_WREADY ),
-    .WID            ( rn2_WID ),
     .WDATA          ( rn2_WDATA ),
     .WSTRB          ( rn2_WSTRB ),
     .WLAST          ( rn2_WLAST ),
@@ -1097,7 +1094,6 @@ RN_Wrapper u_rn3
 
     .WVALID         ( rn3_WVALID ),
     .WREADY         ( rn3_WREADY ),
-    .WID            ( rn3_WID ),
     .WDATA          ( rn3_WDATA ),
     .WSTRB          ( rn3_WSTRB ),
     .WLAST          ( rn3_WLAST ),
@@ -1624,9 +1620,7 @@ SN_Wrapper u_sn3(
 
 
 // NoC instantiate
-NoC_top #(
-    .param
-) u_noc_top
+NoC_top u_noc_top
 (
     .clock                              ( clock ),
     .reset                              ( reset ),
