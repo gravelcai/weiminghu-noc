@@ -16,4 +16,5 @@
 -y ../verilog/veer/include
 -y ../verilog/veer/lib
 -y ../verilog/veer/lsu
+-y ../verilog/RN
 -y ../verilog/Ring4_82bits

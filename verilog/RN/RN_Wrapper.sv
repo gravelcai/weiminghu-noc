@@ -49,7 +49,7 @@ module RN_Wrapper(
   //W Channel
   output           WREADY,
   input            WVALID,
-  input  [10:0]    WID,
+  //input  [10:0]    WID,
   input  [63:0]    WDATA,
   input  [7:0]     WSTRB,
   input            WLAST,
@@ -84,61 +84,15 @@ module RN_Wrapper(
   output  [3:0]    RUSER
 );
 
-  reg   [7:0]     awlen_q;
-  reg             aw_new;
-
-  reg   [7:0]     arlen_q;
-  reg             ar_new;  
-
   reg   [1:0]     AW_TgtID;
   wire  [1:0]     NODE_AW;
-
+  wire  [10:0]    WID;
 
 //W Channel Head and Tail flit signal
-  always@(posedge clk)
-  begin
-    if(rst) begin
-        awlen_q[7:0] <= 8'b0 ;
-        aw_new <= 1'b0;
-    end
-    else if(AWVALID) begin
-        awlen_q[7:0] <= AWLEN[7:0] + 1 ;
-        aw_new <= 1'b1;
-    end
-    else if(WVALID) begin
-        awlen_q[7:0] <= awlen_q[7:0] - 1 ;
-        aw_new <= 1'b0;
-    end
-    else begin
-        awlen_q[7:0] <= awlen_q[7:0] ;
-        aw_new <= aw_new;
-    end
-  end
-
 assign w_head = AWVALID & WVALID ;
 assign w_tail = WLAST ;
 
 //R Channel Head and Tail flit signal
-  always@(posedge clk)
-  begin
-    if(rst) begin
-        arlen_q[7:0] <= 8'b0 ;
-        ar_new <= 1'b0;
-    end
-    else if(ARVALID) begin
-        arlen_q[7:0] <= ARLEN[7:0] + 1 ;
-        ar_new <= 1'b1;
-    end
-    else if(RVALID) begin
-        arlen_q[7:0] <= arlen_q[7:0] - 1 ;
-        ar_new <= 1'b0;
-    end
-    else begin
-        arlen_q[7:0] <= arlen_q[7:0] ;
-        ar_new <= ar_new;
-    end
-  end
-
 assign r_head = ARVALID & RVALID ;
 assign r_tail = RLAST ;
 
@@ -163,7 +117,6 @@ assign BID = b_payload[16:6];
 assign BRESP = b_payload[5:4];
 assign BUSER = b_payload[3:0];
 
-
 //AR
 assign ARREADY = ar_ready;
 assign ar_valid = ARVALID;
@@ -178,11 +131,13 @@ assign RDATA = r_payload[69:6];
 assign RRESP = r_payload[5:4];
 assign RUSER = r_payload[3:0];
 
-
-
+//generate WID for RT combining AW and W,then generate w_tgtid
+assign WID = AWID;
 
 //RN_WRT 在AW握手成功后将AWID、AW_TgtID存储，等待之后W握手成功后将AW_TgtID作为w_tgtid发往目标节点
   RN_WRT u_RN_WRT(
+    .clk(clk),
+    .rst(rst),
     .AWREADY(AWREADY),
     .AWVALID(AWVALID),
     .AWID(AWID),
@@ -195,17 +150,14 @@ assign RUSER = r_payload[3:0];
   );
 
   SAM u_SAM_AW(
-    .ADDR(AWADDR),
+    .ADDR(AWADDR[31:30]),
     .NODE(NODE_AW)
   );
 
   SAM u_SAM_AR(
-    .ADDR(ARADDR),
+    .ADDR(ARADDR[31:30]),
     .NODE(ar_tgtid)
   );
 
-  /*CPU u_core(
-    
-  );*/
-
   endmodule
+  
